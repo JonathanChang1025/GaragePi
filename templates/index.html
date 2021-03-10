@@ -1,0 +1,68 @@
+<html>
+  <head>
+    <title>Garage Control</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script type=text/javascript>
+        $(function() {
+          $('a#btn_toggle').on('click', function(e) {
+            e.preventDefault();
+
+            $.getJSON('/toggle_garage', function(data) {
+              var countDown = parseInt(data.result);
+              if (countDown == -1) {
+                  $("#garageStatus").text("Garage Toggled");
+                  setTimeout(function() {
+                      $("#garageStatus").text("");
+                  }, 1000)
+              } else {
+                  (function delayedLoop(i) {
+                      setTimeout(function() {
+                          if (--i > 0) {
+                              $("#garageStatus").text("Toggled Recently. Please wait " + i + " seconds");
+                              delayedLoop(i);
+                          } else {
+                              $("#garageStatus").text("");
+                          }
+                      }, 1000)
+                  })(countDown); 
+              }
+            });
+            return false;
+          });
+        });
+
+    </script>
+    <style>
+      .center-horizontal {
+        margin: 0;
+        position: relative;
+        left: 50%;
+        transform: translate(-50%);
+      }
+
+      .btn-style {
+        background-color: #4CAF50;
+        border: none;
+        color: white;
+        padding: 15px 250px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 32px;
+        margin: 2px 2px;
+        cursor: pointer;
+      }
+
+      .text-align {
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body style="background-color:#000000">
+    <img class="center-horizontal" src="{{ url_for('video_feed') }}">
+    <br>
+    <div class="text-align"><a id=btn_toggle><button class="btn-style">Toggle Garage</button></a></div>
+    <p class="text-align" style="color:white;"><span id=garageStatus></span></p>
+  </body>
+</html>
